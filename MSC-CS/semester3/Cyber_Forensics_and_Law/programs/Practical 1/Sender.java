@@ -1,65 +1,42 @@
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Random;
-import java.util.Scanner;
 
-/**
- * Sender: Sends an encrypted message and generated key 
- * to the receiver.
- * Uses Sockets for communication.
- */
+
 public class Sender {
-    /**
-     * @param args Command line arguments
-     */
-    public static void main(String[] args) {
-        int counter = 0;
-        String cipherText = "", key = "";
-        Random random = new Random();
-        Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) throws Exception {
+        int i=0,k=0;
+        String s="";
+        String ct="";
+        String key="";
 
-        try {
-            Socket socket = new Socket("localhost", 6017);
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Enter message: ");
-            String message = scanner.nextLine();
-
-            /*
-             * Code for encryption.
-             * Working:
-             * 1. Generate an array of n (length of the message) random numbers.
-             * 2. Add the codePoints of the message with the array sequentially.
-             * 3. Append the typecasted character to the ciphertext.
-             */
-            int[] keyArray = new int[message.length()];
-            for (char messagePart : message.toCharArray()) {
-                keyArray[counter] = random.nextInt(50);
-                key += Integer.valueOf(keyArray[counter]) + ":";
-                cipherText += (char)(messagePart + keyArray[counter]);
-                counter++;
-            }
-
-            System.out.println("Message: " + message);
-            System.out.println("Generated key: " + key);
-            System.out.println("Encrypted message: " + cipherText);
-
-            dataOutputStream.writeUTF(cipherText);
-            dataOutputStream.writeUTF(key);
-
-            scanner.close();
-            dataOutputStream.flush();
-            dataOutputStream.close();
-            socket.close();
+        Socket sc=new Socket("localhost",6020);
+        Random r=new Random();
+        System.out.println("Enter the String");
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(sc.getOutputStream()));
+        s=br.readLine();
+        int j[]=new int[s.length()];
+        for(i=0; i<s.length();i++)
+        {
+            j[k]=r.nextInt(50);
+            key +=Integer.valueOf(j[k])+",";
+            System.out.print("j="+j[k]);
+            ct +=(char)(s.charAt(i)+j[k]);
+            k++;
         }
-        catch (UnknownHostException e) {
-            System.err.println("Error: Host not found.");
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            System.err.println("IOError: Some I/O operations could not be performed.");
-            e.printStackTrace();
-        }
+        System.out.println("Key="+key);
+        System.out.println("Encrypted msg=" + ct);
+        bw.write(ct+","+key);
+        bw.flush();
+        bw.close();
+
     }
+
 }
+
+
+
